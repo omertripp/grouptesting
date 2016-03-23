@@ -1,1 +1,95 @@
 \section{The Theory of Compressed Sensing}
+
+We first introduce the key concepts arising in compressed sensing: sparsity, 
+linear measurements, and recovery of sparse signals. We will describe recoverability, 
+and efficient algorithms. Then we will move to Boolean compressed sensing, which is 
+also known in statistics literature as the classical group testing problem.
+
+\subsection{Search for sparse signals}
+
+There is a great variety of practical problems where we have an unknown vector $\bx$
+of large dimensions $N$, which we would like to learn, but it is too expensive to measure all 
+the coordinates of the vector. For example in {\em network tomography} we may be interested
+in the vector of latencies for each edge (connection) in a large computer network -- e.g. 
+a wide-area network. We may not be interested in the minute details of each connection -- but
+rather in a small number of defects or abnormalities (e.g. unusually large latencies). If we 
+knew where these latencies occur, the problem would be easy, as we simply would measure these 
+particular connections. But, knowing which are the faulty connections is the crux of the challenge. 
+Compressed sensing suggests to take a small number of aggregate measurements of total latency for 
+a set of random paths, and to use numerical optimization (namely linear programming) to un-mix the 
+measurements to be able to precisely locate the anomalies to the level of an individual segment.  
+The fact that is at all possible may seem surprising, but it is based on very elegant theory 
+building on linear algebra and geometry of polytopes.  Applications of similar flavor occur in 
+diverse other fields such as spectrum estimation, genetic disease testing, and even feature 
+selection in machine learning. We now describe the mathematical foundations for this exciting theory. 
+
+Suppose that $\bx$ $\rR^N$ where the number of non-zero elements $K$, which we will denote as 
+$\Vert \bx \Vert_0 = K$ is small, i.e.  $K \ll N$.   We take $M$ aggregate linear measurements 
+$y_i = \ba^T \bx$, where $K < M \ll N$ and aggregate them into a vector $\by = [y_1, ..., y_M]$:
+\begin{equation}
+\by = A \bx
+\end{equation}
+Now, given $\by$ and knowing the measurement matrix $A$, can we hope to recover the unknown 
+sparse vector $\bx$?  It turns out that if $A$ was chosen properly, and if $\bx$ is sparse 
+enough, then indeed we can. Furthermore, this recovery can be done by an efficient optimization
+procedure, namely linear programming (LP). 
+
+First we recall a theorem that allows brute force exact recovery \cite{Donoho}. Define the {\em spark} 
+$S(A)$ of a matrix $A$ as the minimum number of linearly dependent columns of $A$. This is related to, 
+but different from rank of the matrix\footnote{For example, it's easy to construct a matrix of rank 
+$3$, which has two $2$ linearly dependent columns: just take an arbitrary rank-$3$ matrix and 
+copy one of the columns twice!}. It turns out that one can recover uniquely sparse vectors which 
+have at most $S(A) / 2$ non-zero entries. 
+ 
+\begin{theorem}
+\label{thm:spark}
+Suppose that $\Vert \bx \Vert_0 = K < S(A) / 2$. Then there is a unique solution to the 
+set of equations $\by = A \bx$. 
+\end{theorem}
+
+This suggests that one can formulate the following optimization problem to find the sparse set of solutions
+\begin{equation}
+\min_{\bx} \Vert \bx \Vert_0  ~~\mbox{ s.t. }~~ \by = A \bx
+\end{equation}
+Now, while the solution of this problem will give us the desired sparse signal (proviso the conditions in 
+theorem \ref{thm:spark}), the problem has no tractable solution, indeed it is an NP-hard problem \cite{complexity_sparse_rec}. 
+
+Astonishingly, under stronger conditions, the solution to this problem can be obtained exactly by a linear
+programming relaxation where we replace the count of non-zeros $\Vert \bx \Vert_1$  by the $\ell_1$-norm
+of the vector $\Vert \bx \Vert_1 = \sum_i | x_i|$. 
+\begin{equation}
+\min_{\bx} \Vert \bx \Vert_1  ~~\mbox{ s.t. }~~ \by = A \bx
+\end{equation}
+
+If we define a relaxed notion of well-posedness of the matrix $A$ called incoherence, then the following
+theorem holds:
+\begin{theorem}
+\label{thm:spark}
+Exact recovery condition under incoherence. 
+\end{theorem}
+
+Stronger conditions have been developed based on RIP. \\
+
+However RIP is hard to check for a given matrix.\\
+
+Fortunately, random matrices satisfy RIP with high probability. \\
+
+
+\section{ Boolean compressed sensing}
+
+replace $\by$, $A$ and $\bx$ from real-valued to boolean. 
+Replace the matrix-multiply by boolean multiply. \\
+
+Similar story... Group testing.\\
+
+Exact recovery under disjunctnes.\\
+
+Efficient exact recovery via LP.\\
+
+
+
+
+
+
+
+
