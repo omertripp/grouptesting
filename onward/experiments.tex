@@ -1,4 +1,12 @@
 \section{Implementation and Evaluation}
+In this section, we describe a framework for applying group testing to the problem of explaining sanitizers. We begin with an explanation of the data generation, followed by a description of some simple sanitizers, and then explain how the framework is used to explain the sanitizers.
+
+\subsection{Data Generation}
+In general, any set we describe is based on an alphabet $\Sigma=\{x_1,ldots,x_n\}$ comprised of $n$ tokens $x_i$ for $i=1,\ldots,n$. There are a finite number of strings that can be created based on the alphabet $\Sigma$ and we denote the set of possible strings as $\Sigma^*$. In any experiment, we will sample $m$ strings from $\Sigma^*$ and run a particular sanitizer on the $m$ strings to generate a vector $b$ that indicates whether or not each sample string is blocked by the sanitizer. Two questions remain: how to represent each string and how to sample each string. 
+
+We discuss two string representations. Both representations define the matrix $A$ in the group testing formulation, where the $i^{th}$ row of $A$ represents the $i^{th}$ string. The first representation is token-based and was already described in Section \ref{ss:grouptesting_optimization}. In this representation, matrix $A$ has $n$ columns where $n$ is the number of individual tokens. The $i^{th}$ string is represented by $A_{i\cdot}$ where $A_{ij}=1$ if token $j$ appears in the string and $A_{ij}=0$ if it does not appear. The main issue with this representation is that it does not take token ordering into account. Specifically, suppose \textbf{$<$/} and \textbf{$>$} are tokens and the sanitizer blocks any string with the pattern \textbf{$<$/[a-zA-Z0-9]*$>$} (i.e., open and close angles with alphanumeric text in between), and consider two strings "$<$/Hello$>$" and "$>$Hello$<$/". Then any string with the angles in the opposite order will obviously not be blocked by the sanitizer but will have the same inner product with the solution $x$ as a string with the malicious pattern. Robustness from the slack variable $\epsilon$ in problem (\ref{eq:robust_grouptesting}) can handle such a situation (otherwise the problem would be infeasible).  
+
+
 
 \begin{itemize}
 	\item prototype implementation
