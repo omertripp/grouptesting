@@ -1,1 +1,10 @@
 \section{Technical Overview}
+
+We assume a finite alphabet $\Sigma=\{ \tau,\tau',\ldots \}$ of tokens used to express test inputs. An input is a member of $\Sigma^{\star}$. For example, input ${\sf <script>alert('1')</script>}$ consists of tokens ${\sf <script>}$, ${\sf alert('1')}$ and ${\sf </script>}$.
+
+An \emph{element} is a token tuple, e.g. the 1-tuple ${\sf (<script>)}$ (or simply ${\sf <script>}$) or 2-tuple ${\sf (<script>,</script>)}$. We say that input $i=\tau_1 \cdot \ldots \cdot \tau_n$ matches element $e$ or arity $k$, denoted $i \models e$, if
+$$
+\exists 1 \leq i_1 \leq \ldots \leq i_k \leq n.\ \bigwedge_{1 \leq m \leq k}
+i(i_m) = e(m)  
+$$
+That is, the input contains a subsequence of tokens that matches the tokens specified as the element.
