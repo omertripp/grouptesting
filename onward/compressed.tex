@@ -120,13 +120,13 @@ matrices $A$, which fortunately can be shown to satisfy the RIP property with hi
 
 
 \section{ Boolean compressed sensing}
-
+\label{s:boolean_compressed_sensing}
 In many applications we have a very similar problem, of having aggregate measurements 
 of a sparse unknown vector $\bx$, but the measurements may be non-linear.  For the application
 to software testing we will be especially interested in Boolean measurements, where the 
 vector $\bx$ is binary, and each measurement corresponds to a disjunctions of a subset 
 of entries of $\bx$.  While one would think that recovery of active inputs from 
-versus from Boolean measurements should be based on very different principles, it turns
+Boolean measurements should be based on very different principles, it turns
 out that the core information theoretic issues are closely related, and a very similar linear
 programming relaxation can be used for recovery. 
 
@@ -152,25 +152,24 @@ notation to describe the entire set of $M$ measurements:
 \end{figure}
 
 It turns out that the story of exact recovery is parallel to the linear case: 
-if the matrix has well-distributed columns (as captured by the notion of disjunctness)
-and if the vector is sparse enough, then it can be uniquely recovered from the 
+if the matrix has well-distributed columns (as captured by the notion of disjunctness as defined below) and if the vector is sparse enough, then it can be uniquely recovered from the 
 Boolean measurements. 
 
 \begin{definition}
-We call a measurement matrix $\mathbf{A}$ {\em $K$-separating}, 
-if Boolean sums of sets of $K$ columns are all distinct. 
-$\mathbf{A}$ is called {\em $K$-disjunct}, if the union of any 
+We call a measurement matrix $\mathbf{A}$ {\em $K$-separating} 
+if all Boolean sums of subsets of $K$ columns are all distinct. 
+$\mathbf{A}$ is called {\em $K$-disjunct} if the union of any 
 $K$ columns does not contain any other column.
 \end{definition}
 
 Note that the $K$-separating property for $\mathbf{A}$ is sufficient 
 to allow exact recovery of $\mathbf{w}$ with up to $K$ nonzero entries 
 \cite{book2_group_testing}. However, finding the solution would 
-in general require searching over all $K$-subsets out of $n$. K-disjunctness
+in general require searching over all $K$-subsets out of $N$. K-disjunctness
 is a stronger condition, and allows the recovery using simpler algorithms. 
 
 The combinatorial algorithm asks to find the sparsest solution to the 
-set of Boolean equations:
+set of Boolean equations which is done by solving the following optimization problem:
 \begin{equation}
 \label{eq:l0recovery}
 	\min \|\mathbf{x}\|_0 \quad {\textrm{such that }}\mathbf{y} = \mathbf{A} \lor \mathbf{x},
@@ -178,11 +177,10 @@ set of Boolean equations:
 
 We now describe the LP relaxation for the Boolean sparse recovery problem. While
 the problem in (\ref{eq:l0recovery}) looks very similar to the linear one in 
-(\ref{}), the key challenge is that the measurements are not linear. However, 
-they can be represented exactly by a pair of linear equalities and inequalities. 
+(\ref{eqn:l0_sparse_recover}), the key challenge is that the measurements are not linear. However, they can be represented exactly by a pair of linear equalities and inequalities. 
 
-Let $\mathbf{A}_{\mP}$ be the set of measurements $i$ where $y_i$ is positive, 
-and $\mZ = \{i | y_i = 0\}$ is the set of zero (or negative) tests. Then we can 
+Let $\mathbf{A}_{\mP}= \{i | y_i = 1\}$ be the set of measurements $i$ where $y_i$ is positive, 
+and $\mathbf{A}_{\mZ} = \{i | y_i = 0\}$ is the set of zero (or negative) tests. Then we can 
 see that for $i \in \mZ$ we have
 \begin{equation}
 \mathbf{A}_{\mZ}\mathbf{x} = \mathbf{0}
@@ -193,7 +191,6 @@ in the linear case $1 + 1 = 2$, but it is always true that
 \mathbf{A}_{\mP}\mathbf{x} \ge \mathbf{1}
 \end{equation}
 These constraints can be incorporated into an equivalent integer program (IP):
-Thus the Boolean $\ell_1$ problem is:
 \begin{align}
 \label{eq:booleanl1min}
 	\min\quad &\sum_{j=1}^{n} x_j \\
@@ -201,13 +198,12 @@ Thus the Boolean $\ell_1$ problem is:
 		& \mathbf{A}_{\mP}\bx \ge \mathbf{1}\nonumber\\
 		& \mathbf{A}_{\mZ}\bx = \mathbf{0}.\nonumber
 \end{align}
-Because of the Boolean integer constraint on the weights, the problem
-\eqref{eq:booleanl1min} is NP-hard. However, relaxing the binary constraints
-to linear interval constraints, we get a tractable linear program (LP):
+Note that since $x$ is boolean, the objectives are equivalent (i.e., $\|x\|_0=\sum_i{x_i}$), and yet still, the problem
+\eqref{eq:booleanl1min} is NP-hard because of the Boolean integer constraint on the weights. However, relaxing the binary constraints to linear interval constraints, we get a tractable linear program (LP):
 \begin{align}
 \label{eq:booleanl1min}
 	\min\quad &\sum_{j=1}^{n} x_j \\
-	\textrm{s.t.\quad} & x_j \in \{0,1\},\,j = 1,\ldots,n\nonumber\\
+	\textrm{s.t.\quad} & 0\leq x_j \leq 1, \,j = 1,\ldots,n\nonumber\\
 		& \mathbf{A}_{\mP}\bx \ge \mathbf{1}\nonumber\\
 		& \mathbf{A}_{\mZ}\bx = \mathbf{0}.\nonumber
 \end{align}
@@ -222,11 +218,11 @@ $\by = \mathbf{A} \lor \bx^*$. If the matrix $\mathbf{A}$ is $K$-disjunct then
 LP solution $\hat{\bx}$ in (\ref{eq:booleanl1minLP}) recovers $\bx^*$, i.e. $\hat{\bx} = \bx^*$.
 \end{theorem}
 
-This is a sufficient condition, but not necessary. In practice one can apply
+This is a sufficient condition, but not necessary. In practice, one can apply
 the LP approach even if the LP yields fractional solution, with the help 
-of randomized rounding, or other approaches for binarization.
+of randomized rounding or other approaches for mapping to binary numbers.
 
-Now in practical situations we typically have noisy measurements. 
+In practical situations, we typically have noisy measurements. 
 We consider noise on the $\by$ vector, where some bits can flip from 
 $0$ to $1$ and vice versa. We represent this by 
 \begin{equation}
@@ -234,20 +230,19 @@ $0$ to $1$ and vice versa. We represent this by
 	\mathbf{y} = (\mathbf{A} \lor \mathbf{x}) \oplus \mathbf{n},
 \end{equation}
 
-To extend the LP formulation in the presence of noisy measurements, we look
+To extend the LP formulation in the presence of noisy measurements (where $\mathbf{y} = (\mathbf{A} \lor \mathbf{x}) \oplus \mathbf{n}$), we look
 for sparse rules that do not match $\by$ exactly, but rather approximate 
 $\by$ very closely. The corresponding LP formulation is:
 \begin{align}
 \label{eq:booleanl1minLPslack}
-	\min\quad &\sum_{j=1}^{n} x_j + \lambda\sum_{i=1}^{m}\xi_i\\
+	\min\quad &\sum_{j=1}^{n} x_j + C\sum_{i=1}^{m}\xi_i\\
 	\textrm{s.t.\quad} & 0 \le x_j \le 1,\,j = 1,\ldots,n\nonumber\\
 		& 0 \le \xi_i \le 1, ~i \in \mP \nonumber\\
 		& 0 \le \xi_i, ~i \in \mZ\nonumber\\
 		& \mathbf{A}_{\mP}\mathbf{x} + \boldsymbol{\xi}_{\mP} \ge \mathbf{1}\nonumber\\
 		& \mathbf{A}_{\mZ}\mathbf{x} = \boldsymbol{\xi}_{\mZ}.\nonumber
 \end{align}
-The regularization parameter $\lambda$ trades off the sparsity of $\bx$ versus
-the number of errors in satisfying the boolean equations.
+The regularization parameter $C$ trades off two objectives: minimizing the sparsity of $\bx$ versus minimizing a penalty on the number of errors in satisfying the boolean equations. The parameter $C$ is a tunable parameter to the model.
 
 
 

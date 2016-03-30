@@ -24,44 +24,38 @@ If the confidence is high for token $x$, then the sanitizer is likely to block a
 %\]
 %The problem of testing is to determine whether or not a sanitizer $S$ accepts all strings in $T$ (a sanitizer is said to accept a string if it inputs the string and returns the same strong with no modifications).  Our goal is to provide a prioritization for sanitizing the strings in $T$ by determining which tokens are most associated with the sanitizer rejecting strings.  The idea is to create random strings, sanitize them, and learn which tokens define the results. 
 
-\subsection{Group Testing Through Optimization}
-\label{ss:grouptesting_optimization}
-Formally, let $U=\{\omega_1,\ldots,\omega_m\}$ be the set of $m$ random strings built from the possible tokens.  Define a matrix $A$ with $m$ rows and $n$ columns by 
+Formally, let $U=\{\omega_1,\ldots,\omega_M\}$ be the set of $M$ random strings built from the possible tokens.  Define a matrix $A$ with $M$ rows and $N$ columns by 
 \[A_{ij}=
 \begin{cases} 1 &\mbox{if token } j \mbox{ appears in random string } i \\
 0 & \mbox{otherwise}
 \end{cases} 
 \]
-and the observed vector $b$ as $b_i=1-S(\omega_i)$ so that $b_i$ equals one if the $i^{th}$ random string is blocked by the sanitizer.  In practice, we known that sanitizer $S$ blocks string $\omega$ if $S(\omega)\neq\omega$ (i.e., at least one of the tokens in $\omega_i$ is not present in the sanitizer's output string).  Define a variable $x\in\{0,1\}^n$ such that $x_i=1$ if inclusion of the $i^{th}$ token in a string is cause for being blocked by the sanitizer.  Then our goal can be formulated by learning $x$ such that $A\vee x=b$, where $(A\vee x)_i=\vee_{j=1}^n(A_{ij}\wedge x_j)$, $\vee$ is the boolean OR operator, and $\wedge$ is the boolean AND operator.  We pose to learn $x$ by solving the following optimization problem:
-\[\begin{array}{ll}
-\mbox{minimize} & \|x\|_0\\
-\mbox{subject to} & A\vee x=b \\
-& x\in\{0,1\}^n,
-\end{array}\]
-which seeks to learn a minimal number of tokens that explain the output of the sanitizer. Note that since $x$ is boolean, $\|x\|_0=\sum_i{x_i}$.  Then the remaining difficulties of solving this problem are the logical multiplication and the binary constraints.  Firstly, as described in \cite{MalioutovM2012}, the logical multiplication $A\vee x=b$ can be replaced by the linear constraints $A_\mathcal{I}x\geq b_\mathcal{I}$ and $A_\mathcal{J}x=\textbf{0}_{|\mathcal{J}|}$ where $\mathcal{I}=\{i : b_i=1\}$ and $\mathcal{J}=\{i : b_i=0\}$, giving us the problem
-\[\begin{array}{ll}
-\mbox{minimize} & \sum_i{x_i}\\
-\mbox{subject to} & A_\mathcal{I}x\geq b_\mathcal{I} \\
-& A_\mathcal{J}x=\textbf{0}_{|\mathcal{J}|} \\
-& x\in\{0,1\}^n.
-\end{array}\]
-While this problem is still NP-hard (due to the binary constraints), under some (rather strong) assumptions about the sparsity of $x$, the optimal solution can be recovered by solving the following relaxation:
-\[\begin{array}{ll}
-\mbox{minimize} & \sum_i{x_i}\\
-\mbox{subject to} & A_\mathcal{I}x\geq b_\mathcal{I} \\
-& A_\mathcal{J}x=\textbf{0}_{|\mathcal{J}|} \\
-& 0\leq x \leq 1,
-\end{array}\]
-where the binary constraints have now been relaxed to linear constraints. This linear programming relaxation was first proposed in \cite{MalioutovM2012}. As done with compressed sensing, we can consider a noisy setting in which the results of a sanitizer might be incorrect. We consider the linear program, also derived in \cite{MalioutovM2012},
-\begin{equation}
-\label{eq:robust_grouptesting}
-\begin{array}{ll}
-\mbox{minimize} & \sum_i{x_i}+C\sum_i{\epsilon_i}\\
-\mbox{subject to} & A_\mathcal{I}x+\epsilon_\mathcal{I}\geq b_\mathcal{I} \\
-& A_\mathcal{J}x\geq \epsilon_{|\mathcal{J}|} \\
-& 0\leq x \leq 1\\
-\epsilon\geq0\\
-\epsilon_\mathcal{I}\leq 1.
-\end{array}\end{equation}
-The objective now trades off two objectives: minimizing the number of tokens needed to explain the sanitizer versus minimizing the penalty for ignoring the results of the sanitizer for any given instance. Mistakes by the sanitizer are penalized with rate $C$ which is a tunable parameter to the model. We solve problems of the form (\ref{eq:robust_grouptesting}) in order to explain sanitizers.
+and the observed vector $y$ as $y_i=1-S(\omega_i)$ so that $y_i$ equals one if the $i^{th}$ random string is blocked by the sanitizer.  In practice, we known that sanitizer $S$ blocks string $\omega$ if $S(\omega)\neq\omega$ (i.e., at least one of the tokens in $\omega_i$ is not present in the sanitizer's output string).  Define a variable $x\in\{0,1\}^n$ such that $x_i=1$ if inclusion of the $i^{th}$ token in a string is cause for being blocked by the sanitizer.  Then our goal can be formulated by learning $x$ such that $A\vee xyb$, where $(A\vee x)_i=\vee_{j=1}^n(A_{ij}\wedge x_j)$, $\vee$ is the boolean OR operator, and $\wedge$ is the boolean AND operator.  We pose to learn $x$ by solving problem (\ref{eq:l0recovery}) which, as explained in Section \ref{s:boolean_compressed_sensing}, seeks to learn a minimal number of tokens that explain the output of the sanitizer. As this problem is not tractable, we solve problem (\ref{eq:booleanl1minLPslack}) in practice. 
 
+%Note that since $x$ is boolean, $\|x\|_0=\sum_i{x_i}$.  Then the remaining difficulties of solving this problem are the logical multiplication and the binary constraints.  Firstly, as described in \cite{MalioutovM2012}, the logical multiplication $A\vee x=b$ can be replaced by the linear constraints $A_\mathcal{I}x\geq b_\mathcal{I}$ and $A_\mathcal{J}x=\textbf{0}_{|\mathcal{J}|}$ where $\mathcal{I}=\{i : b_i=1\}$ and $\mathcal{J}=\{i : b_i=0\}$, giving us the problem
+%\[\begin{array}{ll}
+%\mbox{minimize} & \sum_i{x_i}\\
+%\mbox{subject to} & A_\mathcal{I}x\geq b_\mathcal{I} \\
+%& A_\mathcal{J}x=\textbf{0}_{|\mathcal{J}|} \\
+%& x\in\{0,1\}^n.
+%\end{array}\]
+%While this problem is still NP-hard (due to the binary constraints), under some (rather strong) assumptions about the sparsity of $x$, the optimal solution can be recovered by solving the following relaxation:
+%\[\begin{array}{ll}
+%\mbox{minimize} & \sum_i{x_i}\\
+%\mbox{subject to} & A_\mathcal{I}x\geq b_\mathcal{I} \\
+%& A_\mathcal{J}x=\textbf{0}_{|\mathcal{J}|} \\
+%& 0\leq x \leq 1,
+%\end{array}\]
+%where the binary constraints have now been relaxed to linear constraints. This linear programming relaxation was first proposed in \cite{MalioutovM2012}. As done with compressed sensing, we can consider a noisy setting in which the results of a sanitizer might be incorrect. We consider the linear program, also derived in \cite{MalioutovM2012},
+%\begin{equation}
+%\label{eq:robust_grouptesting}
+%\begin{array}{ll}
+%\mbox{minimize} & \sum_i{x_i}+C\sum_i{\epsilon_i}\\
+%\mbox{subject to} & A_\mathcal{I}x+\epsilon_\mathcal{I}\geq b_\mathcal{I} \\
+%& A_\mathcal{J}x\geq \epsilon_{|\mathcal{J}|} \\
+%& 0\leq x \leq 1\\
+%&\epsilon\geq0\\
+%&\epsilon_\mathcal{I}\leq 1.
+%\end{array}\end{equation}
+%The objective now trades off two objectives: minimizing the number of tokens needed to explain the sanitizer versus minimizing the penalty for ignoring the results of the sanitizer for any given instance. Mistakes by the sanitizer are penalized with rate $C$ which is a tunable parameter to the model. We solve problems of the form (\ref{eq:robust_grouptesting}) in order to explain sanitizers.
+%
