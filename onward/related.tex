@@ -4,15 +4,15 @@ We divide our discussion of related work into two parts: software testing and co
 
 \subsection{Software Testing} 
 
-The delta-debugging algorithm \cite{XXX,XXX} generalizes and simplifies a failing test case into a minimal failing test, and also isolates the difference between a failing and a passing test. The underlying idea is to systematically simplify the failing scenario until the root cause of failure is uncovered, and dually, if a passing scenario is also available, then that scenario is evolved into a scenario that is increasingly similar to the failing scenario.
+The delta-debugging algorithm \cite{DeltaDebugging:2000,DeltaDebugging:2002} generalizes and simplifies a failing test case into a minimal failing test, and also isolates the difference between a failing and a passing test. The underlying idea is to systematically simplify the failing scenario until the root cause of failure is uncovered, and dually, if a passing scenario is also available, then that scenario is evolved into a scenario that is increasingly similar to the failing scenario.
 
 The goal of isolating the cause of failure is conceptually similar to our goal of obtaining a minimal characterization of the target system's behavior. However, from a technical perspective, our approach --- grounded in the theory of group testing --- is quite distinct. The process is not iterative (at least in the offline variant), and there are formal guarantees that govern the complexity of our technique.
 
-The XSS Analyzer system \cite{XXX}, designed to test web applications for XSS vulnerabilities, is guided by an online feedback loop. The key idea is to (i) learn from a failing input $i$ what the reason for the failure was by testing the target system with the tokens $i$ consists of, and (ii) if one or more of these tokens also fail in isolation, prune all inputs that include a failing token.
+The XSS Analyzer system \cite{TrippIssta:2013}, designed to test web applications for XSS vulnerabilities, is guided by an online feedback loop. The key idea is to (i) learn from a failing input $i$ what the reason for the failure was by testing the target system with the tokens $i$ consists of, and (ii) if one or more of these tokens also fail in isolation, prune all inputs that include a failing token.
 
 A key difference between our approach and XSS Analyzer is that XSS Analyzer can only handle single-token-based sanitization, and not regular expressions that range over combinations of tokens. In the latter case, combinatorial explosion would degrade the process into an unscalable testing solution. With our approach, in contrast, the combinatorial complexity is mitigated by drawing correlations between token combinations and failures according to the theory of group testing.
 
-Wang et al. \cite{FromXssAnalyzer} also focus on security testing. They propose a learning approach to synthesize effective XSS payloads. Their technique proceeds byfirst mining real-world XSS payloads,
+Wang et al. \cite{YH-Wang:2010} also focus on security testing. They propose a learning approach to synthesize effective XSS payloads. Their technique proceeds byfirst mining real-world XSS payloads,
 then decomposing each payload into its constituting elements,
 and finally building a hidden Markov model of the
 connections between the different elements, which permits
@@ -20,9 +20,11 @@ synthesis of mutated XSS attacks.
 
 A main difference from our approach is that we focus on a particular software system, in fingerprinting its behavior, whereas Wang et al. generate XSS payloads in an open-world setting. This is of course valuable, but given a specific subject $S$ for testing, our approach (similarly to XSS Analyzer) targets $S$ in particular and so it is more effective.
 
-Closer to our goal of creating a model for a black-box system is the testing solution by Doupe \OTODO{FIX} et al. \cite{FromXssAnalyzer}. Their goal is to create a state-machine representation for web applications, which captures
-how the state of the web application changes as a function of the requests it receives. Doupe \OTODO{FIX} et al. et al. utilize a heuristic, whereby if the same request was sent twice but different responses were received, then a state change has occurred. A similar project ...
+Closer to our goal of creating a model for a black-box system is the testing solution by Doup\'e et al. \cite{Doupe:2012}. Their goal is to create a state-machine representation of web applications, which captures
+how the state of the web application changes as a function of the requests it receives. Doup\'e et al. et al. utilize a heuristic, whereby if the same request was sent twice but different responses were received, then a state change has occurred. Similarly, Amalfitano et al. \cite{Amalfitano:FT08} model, under black-box assumptions, the behavior of rich internet applications (RIAs) as a finite state machine. In this case, the states are the DOM configurations, and the transitions are the UI events that relate between configurations. The analysis interleaves two types of steps: \emph{extraction} (to trace event-driven client configuration and \emph{abstraction} (to cluster together equivalent configurations).
 
+We, too, propose a form of reverse engineering, though we target a different scope and utilize a different technique. As such, we view our contributions in this paper as complementary to these works: We model the system's response to data inputs, while Doup\'e et al. and Amalfitano et al. focus on request and event-driven behaviors, respectively.
 
+For further reading on black-box testing, and security testing in particular, we refer the reader to Bau et al. \cite{Bau:2010} and references therein. For a detailed survey of web-application validation bypass techniques, we point to Offutt et al. \cite{Offutt1,Offutt2,Offutt3}. 
 
 \subsection{Compressed Sensing}
