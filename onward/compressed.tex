@@ -201,7 +201,7 @@ These constraints can be incorporated into an equivalent integer program (IP):
 Note that since $x$ is boolean, the objectives are equivalent (i.e., $\|x\|_0=\sum_i{x_i}$), and yet still, the problem
 \eqref{eq:booleanl1min} is NP-hard because of the Boolean integer constraint on the weights. However, relaxing the binary constraints to linear interval constraints, we get a tractable linear program (LP):
 \begin{align}
-\label{eq:booleanl1min}
+\label{eq:booleanl1minLP}
 	\min\quad &\sum_{j=1}^{n} x_j \\
 	\textrm{s.t.\quad} & 0\leq x_j \leq 1, \,j = 1,\ldots,n\nonumber\\
 		& \mathbf{A}_{\mP}\bx \ge \mathbf{1}\nonumber\\
@@ -210,7 +210,7 @@ Note that since $x$ is boolean, the objectives are equivalent (i.e., $\|x\|_0=\s
 
 We can show that if the $A$ matrix is $K$-disjunct, then we can recover 
 sparse inputs $\bx$ with at most $K$ non-zero entries using the LP 
-in (\ref{eq:booleanl1min}). 
+in (\ref{eq:booleanl1minLP}). 
 \begin{theorem}
 \label{thm:LP_recovery}
 Suppose there exists $\bx^*$ with $K$ nonzero entries and 
