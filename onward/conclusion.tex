@@ -1,1 +1,11 @@
 \section{Conclusion and Future Work}
+
+We have presented a promising approach to optimize software testing under black-box assumptions. The key idea is to first create a model of the software system by characterizing its behavior based on random inputs, organized into groups (the key optimization), then selecting one or more tests that appear effective according to the computed model.
+
+An important feature of our approach is the clear formal guarantees that we articulate regarding the complexity of testing (i.e., the number of tests/inputs involved) and the probability of success. We achieve this through use of a technique from the area of signal processing known as compressed sensing, and in particular its boolean instantiation known as group testing.
+
+In our experiments so far, we have validated the feasibility of group testing as a basis for software testing in the context of integrity assessment. We demonstrated our ability to build an effective model of XSS defenses, including in particular nontrivial regular expressions (beyond the reach of existing state-of-the-art techniques), efficiently and accurately. With our solution, only XXX tests were required on average compared to an average of XXX tests in the case of brute-force testing.
+
+Our two main plans for the future are to extend the scope of our experiments to other testing problems as well as implement an open-source reusable framework for software testing based on compressed sensing. These naturally are related goals, since the hope is that once the framework is available, members of our community will make use of it to enable more clients, and on the other hand, experimenting with multiple clients will guide us in capturing reusable elements and abstractions as part of the framework.
+
+A concrete example of a client that we are interested to implement next is complier testing. Here individual inputs correspond to different pieces of the language syntax, and the goal is to efficiently isolate specific fragments of the syntax that the compiler doesn't handle correctly. Our experience lately with the Swift compiler suggests that this is a tedious and nontrivial task, and hence the motivation to address it via group testing.

@@ -19,7 +19,7 @@ $\sf{<script>alert('1')</script>}$
 \end{quote}
 which is clearly suspicious, regular expression
 \begin{quote}
-	TODO Ronny: what's the regex from our eval?
+	\RTODO{what are the regexes in our experiments?}
 \end{quote}
 would match against it, thereby classifying it as malicious, by asserting the simultaneous presence of opening tag ${\sf <script>}$ and closing tag ${\sf </script>}$. This relationship between ${\sf <script>}$ and closing tag ${\sf </script>}$ is nontrivial to capture without direct analysis of the sanitizer. That is, given only the \emph{black-box} ability to send XSS payloads to the web application and register the response, deriving that internally the web application enforces the rule of not letting inputs containing ${\sf <script>}$ and later ${\sf </script>}$ through is nonobvious.
 
