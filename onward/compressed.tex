@@ -11,9 +11,7 @@ the coordinates of the vector. The classical application which served as the ori
 for group testing was testing US army recruits for syphilis during the Second World War. 
 Individual blood tests for every one of the large number of recruits were too expensive, 
 and statisticians consulting for the US army proposed to take pooled measurements, where 
-each test was done on a mixture of blood samples coming from a number of carefully chosen 
-recruits. Given enough such pooled tests, and assuming that only a small fraction of the 
-recruits had the disease, it was possible to identify the infected recruits.  
+each test was done on a mixture of blood samples coming from a number of carefully chosen subsets of recruits. Given enough such pooled tests, and assuming that only a small fraction of the recruits had the disease, it was possible to identify the infected recruits.  
 
 
 In our application to security testing, there is a very large number of individual tokens and 
@@ -37,9 +35,7 @@ is based on very elegant theory building on linear algebra and geometry of polyt
 efficient solution is available using numerical optimization (namely linear programming) which
 can recover the true identity of a sparse set of {\em active inputs} from a number of aggregate
 measurements which is much smaller than $N$. Applications of similar flavor occur in
-other diverse fields such as spectrum estimation, genetic disease testing, and even feature
-selection in machine learning. We next describe the mathematical foundations for this exciting
-theory.
+other diverse fields such as spectrum estimation, genetic disease testing, neuroscience, and even feature selection in machine learning \cite{rish2014sparse}. We next describe the mathematical foundations for this exciting theory.
 
 \subsection{ Linear compressed sensing}
 
@@ -61,10 +57,10 @@ $S(A)$ of a matrix $A$ as the minimum number of linearly dependent columns of $A
 but different from rank of the matrix\footnote{For example, it's easy to construct a matrix of rank
 $3$, which has two $2$ linearly dependent columns: just take an arbitrary rank-$3$ matrix and
 copy one of the columns twice! This matrix has rank $3$ but it's spark is $2$. }. It turns out that
-one can recover uniquely sparse vectors which have at most $S(A) / 2$ non-zero entries.
+one can recover uniquely sparse vectors which have less than $S(A) / 2$ non-zero entries.
 
 \begin{theorem}
-\label{thm:spark}
+970\label{thm:spark}
 Suppose that $\Vert \bx \Vert_0 = K < S(A) / 2$. Then there is a unique solution to the
 set of equations $\by = A \bx$.
 \end{theorem}
@@ -93,10 +89,9 @@ the columns of $A$ are normalized to have Euclidean unit norm, i.e., $\Vert A_i 
 M(A) \triangleq \max_{i \ne j} | A_i^T A_j |
 \end{equation}
 Using this definition, the following theorem holds:
-\RDTODO{FIX the expression in Theorem 2}
 \begin{theorem}
 \label{thm:incoherence}
-If $\Vert \bx \Vert_0 \le \frac{ 1 + \frac{1}{M(A)}} {2}$ then the solution of the $\ell_1$-relaxed
+If $\Vert \bx \Vert_0 < \frac{ 1 + \frac{1}{M(A)}} {2}$ then the solution of the $\ell_1$-relaxed
 problem (\ref{eqn:l1_sparse_recovery}) is also optimal for the combinatorial problem
 (\ref{eqn:l0_sparse_recovery}).
 \end{theorem}
@@ -178,12 +173,12 @@ Let $\mP= \{i | y_i = 1\}$ be the set of measurements $i$ where $y_i$ is positiv
 and $\mZ = \{i | y_i = 0\}$ be the set of zero (or negative) tests. Then we can
 see that for $i \in \mZ$ we have
 \begin{equation}
-\mathbf{A}_{\mZ}\mathbf{x} = \mathbf{0}
+\mathbf{A}_{\mZ}\lor\mathbf{x} = \mathbf{0} ~~~\Leftrightarrow~~~ \mathbf{A}_{\mZ}\mathbf{x} = \mathbf{0}
 \end{equation}
 For the set of positive measurements, in the Boolean case $1\lor 1 = 1$, while
 in the linear case $1 + 1 = 2$, but it is always true that
 \begin{equation}
-\mathbf{A}_{\mP}\mathbf{x} \ge \mathbf{A}_{\mP}\mathbf{x} =\mathbf{1}
+\mathbf{A}_{\mP}\lor\mathbf{x} =\mathbf{1} ~~~\Leftrightarrow~~~ \mathbf{A}_{\mP}\mathbf{x} \ge \mathbf{1}
 \end{equation}
 These constraints can be incorporated into an equivalent integer program (IP):
 \begin{align}
@@ -193,7 +188,7 @@ These constraints can be incorporated into an equivalent integer program (IP):
 		& \mathbf{A}_{\mP}\bx \ge \mathbf{1}\nonumber\\
 		& \mathbf{A}_{\mZ}\bx = \mathbf{0}.\nonumber
 \end{align}
-Note that since $\bx$ is Boolean, the objectives are equivalent (i.e., $\|x\|_0=\sum_i{x_i}$), and yet still, the problem
+Note that since $\bx$ is Boolean, the objectives in problems (\ref{eq:l0recovery}) and (\ref{eq:booleanl1min}) are equivalent (i.e., $\|x\|_0=\sum_i{x_i}$), and yet still, the problem
 \eqref{eq:booleanl1min} is NP-hard because of the Boolean integer constraint on the weights. However, relaxing the binary constraints to linear interval constraints, we get a tractable linear program (LP):
 \begin{align}
 \label{eq:booleanl1minLP}
