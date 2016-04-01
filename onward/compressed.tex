@@ -79,7 +79,7 @@ theorem \ref{thm:spark}), the problem has no tractable solution; indeed it is an
 programming (LP) relaxation where we replace the count of non-zeros $\Vert \bx \Vert_0$  by the $\ell_1$-norm
 of the vector $\Vert \bx \Vert_1 = \sum_i | x_i|$. The problem becomes:\footnote{This optimization problem can be represented as a linear
 program by a standard simple trick of introducing variables $\bx^+$ and $\bx^-$, where $\bx = \bx^+ - \bx^-$,
-and $\bx^+, bx^- \ge 0$. }
+and $\bx^+, \bx^- \ge 0$. }
 \begin{equation}
 \label{eqn:l1_sparse_recovery}
 \min_{\bx} \Vert \bx \Vert_1  ~~\mbox{ s.t. }~~ \by = A \bx
@@ -93,7 +93,7 @@ the columns of $A$ are normalized to have Euclidean unit norm, i.e., $\Vert A_i 
 M(A) \triangleq \max_{i \ne j} | A_i^T A_j |
 \end{equation}
 Using this definition, the following theorem holds:
-
+\RDTODO{FIX the expression in Theorem 2}
 \begin{theorem}
 \label{thm:incoherence}
 If $\Vert \bx \Vert_0 \le \frac{ 1 + \frac{1}{M(A)}} {2}$ then the solution of the $\ell_1$-relaxed
@@ -180,10 +180,10 @@ see that for $i \in \mZ$ we have
 \begin{equation}
 \mathbf{A}_{\mZ}\mathbf{x} = \mathbf{0}
 \end{equation}
-For the set of positive measurements, in the Boolean case $1+1 = 1$, while
+For the set of positive measurements, in the Boolean case $1\lor 1 = 1$, while
 in the linear case $1 + 1 = 2$, but it is always true that
 \begin{equation}
-\mathbf{A}_{\mP}\mathbf{x} \ge \mathbf{1}
+\mathbf{A}_{\mP}\mathbf{x} \ge \mathbf{A}_{\mP}\mathbf{x} =\mathbf{1}
 \end{equation}
 These constraints can be incorporated into an equivalent integer program (IP):
 \begin{align}
@@ -193,7 +193,7 @@ These constraints can be incorporated into an equivalent integer program (IP):
 		& \mathbf{A}_{\mP}\bx \ge \mathbf{1}\nonumber\\
 		& \mathbf{A}_{\mZ}\bx = \mathbf{0}.\nonumber
 \end{align}
-Note that since $x$ is Boolean, the objectives are equivalent (i.e., $\|x\|_0=\sum_i{x_i}$), and yet still, the problem
+Note that since $\bx$ is Boolean, the objectives are equivalent (i.e., $\|x\|_0=\sum_i{x_i}$), and yet still, the problem
 \eqref{eq:booleanl1min} is NP-hard because of the Boolean integer constraint on the weights. However, relaxing the binary constraints to linear interval constraints, we get a tractable linear program (LP):
 \begin{align}
 \label{eq:booleanl1minLP}
@@ -213,7 +213,7 @@ $\by = \mathbf{A} \lor \bx^*$. If the matrix $\mathbf{A}$ is $K$-disjunct then
 LP solution $\hat{\bx}$ in (\ref{eq:booleanl1minLP}) recovers $\bx^*$, i.e. $\hat{\bx} = \bx^*$.
 \end{theorem}
 
-This is a sufficient condition, but not necessary. In practice, one can apply
+This is a sufficient condition, but not necessary. In practice, one can often apply
 the LP approach even if the LP yields fractional solution, with the help
 of randomized rounding or other approaches for mapping to binary numbers.
 
