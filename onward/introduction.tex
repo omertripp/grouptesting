@@ -5,7 +5,7 @@ Software testing is of primary importance. In many, if not most, software develo
 Still, there are not many methodologies for software testing that are fully automatable. Perhaps the most notable exception to this statement is \emph{delta debugging}, where the idea is to systematically narrow the state difference between a failing run and a passing run. As an example, if a 
 web browser crashes on a 10K-line webpage, then via an iterative process of minimizing the failure-inducing input, delta debugging can determine the particular HTML tag causing the failure.
 
-\paragraph{Motivation} This paper follows the same motivation, namely to automate manual reasoning in the process of debugging. Indeed, there is room for more work in this space, since delta debugging --- while broadly applicable and effective --- still leaves important cases uncovered.
+\subsection{Motivation} This paper follows the same motivation, namely to automate manual reasoning in the process of debugging. Indeed, there is room for more work in this space, since delta debugging --- while broadly applicable and effective --- still leaves important cases uncovered.
 
 We focus on one such case: the notorious problem of isolating, or localizing, the cause for a failure in the presence of relationships, or dependencies, between different parts of the input. Unlike the example of a webpage that contains a specific bad tag, we are interested in failures that are only triggered if multiple conditions are satisfied simultaneously.
 
@@ -31,10 +31,10 @@ Note, additionally, that there is significant value in developing black-box test
 \end{quote}
 which utilizes the ${\sf javascript:}$ syntax to execute script content.
 
-\paragraph{Our Approach} We leverage results from the area of combinatorial mathematics to formulate a novel testing approach. The key conceptual idea is to break up the task of locating elements of interest (in our example, either individual parts of the input like ${\sf <script>}$ or relationships like ${\sf (<script>, </script>)}$) into tests on subsets (or groups) rather than on individual elements. This is known as \emph{group testing}.
+\subsection{Our Approach} We leverage results from the area of combinatorial mathematics to formulate a novel testing approach. The key conceptual idea is to break up the task of locating elements of interest (in our example, either individual parts of the input like ${\sf <script>}$ or relationships like ${\sf (<script>, </script>)}$) into tests on subsets (or groups) rather than on individual elements. This is known as \emph{group testing}.
 
 The main assumption underlying group testing is that the property of interest is disjunctive in nature. That is, if it holds for any individual in the group, then it holds for the group as a whole. As an illustration, if we craft a test input to the web application that contains ${\sf <script>}$ and later ${\sf </script>}$, then regardless of what the other parts of the input are (excluding some end cases like line breaks), it will be rejected.
 
-Thanks to this property, it becomes possible to localize --- through a relatively short series of (properly designed) tests --- the elements present in the input that correlate with rejection. Stated formally, given $n$ candidate elements, let $d \ll n$ be the number of elements of interest. Then it is possible to converge on these $d$ elements within XXX tests. 
+Thanks to this property, it becomes possible to localize --- through a relatively short series of (properly designed) tests --- the elements present in the input that correlate with rejection. Stated formally, given $n$ candidate elements, let $d \ll n$ be the number of elements of interest. Then it is possible to converge on these $d$ elements with high probability by executing $O(n \cdot \log (n))$ tests (or drawing this order of samples, to use signal-processing terminology).
 
 To allow the reader a concrete notion of how efficient group testing is, if $n=...$, then ... . What this allows is the definition of relationships between elements as atomic elements while retaining reasonable performance. Hence the possibility to handle complex black-box testing problems for the first time (at least to our knowledge) via a general yet practical solution.

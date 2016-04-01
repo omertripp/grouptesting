@@ -1,4 +1,14 @@
-\section{Technical Overview}
+\section{Overview of Our Approach}
+
+\subsection{Security Testing}
+
+Web applications (and services) often make sensitive use of user-provided data. Such data may reach the response HTML, a database record, a session attribute, etc. To mitigate potential threats due to the use of untrusted data in sensitive operations, web applications make use of \emph{validators} and \emph{sanitizers}. Validators are pure functions that make a boolean determination whether or not the input is admissible. Sanitizers, on the other hand, mutate the input, if it is not admissible, such that it becomes admissible. For brevity, we will sometimes refer to sanitizers and validators collectively as \emph{input filters}.
+
+We assume a predefined set of payloads. While other approaches to testing are based on expert knowledge \cite{AppScan} or an online feedback loop \cite{TrippIssta:2013}, the approach that we are pursuing is model-driven testing: First, a model is devised of the black-box system under test, and then --- based on the model --- one or more tests are discharged that are expected to succeed according to the model.
+
+In our case, the model is formed by sending random combinations (or groups) of tokens and token tuples that constitute parts of payloads (such as {\sf script}, {\sf /}, {\sf $\backslash$}, {\sf alert}, etc). The model then captures how the input filters operate on inputs, and by implication, if and how they can be bypassed.
+
+\subsection{Formal Problem Statement}
 
 We assume a finite alphabet $\Sigma=\{ \tau,\tau',\ldots \}$ of tokens used to express test inputs. An input is a member of $\Sigma^{\star}$. For example, input ${\sf <script>alert('1')</script>}$ consists of tokens ${\sf <script>}$, ${\sf alert('1')}$ and ${\sf </script>}$.
 
@@ -9,7 +19,7 @@ i(i_m) = e(m)
 $$
 That is, the input contains a subsequence of tokens that matches the tokens specified as the element.
 
-Input filtering (by which we refer collectively to both sanitization and validation) is modeled as a regular-expression membership judgment. This is, in fact, the common way of implementing such filters in practice \cite{XXX}. We follow the standard syntax for expressing a regular expression:
+Input filtering is modeled as a regular-expression membership judgment. This is, in fact, the common way of implementing such filters in practice \cite{XXX}. We follow the standard syntax for expressing a regular expression:
 $$
 	r = \epsilon\ |\ \{ \sigma \}_{\sigma \in \Sigma}\ |\ r + r\ |\ r \cdot r\ |\ r^{\star}
 $$
