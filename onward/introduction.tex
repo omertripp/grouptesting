@@ -14,24 +14,27 @@ To make this characterization more concrete, we turn to an actual example (which
 If the web application is designed properly, then such parameters --- coming from the user and thus being untrusted --- are checked for maliciousness before they are passed to downstream business logic. The check may mutate the input, thus being a \emph{sanitizer}, or make an accept/reject decision, thus being a \emph{validator}. In both cases, the implementation typically matches the input against a regular expression to decide its maliciousness.
 
 Given input 
-\begin{quote}
+\begin{center}
 $\sf{<script>alert('1')</script>}$
-\end{quote}
+\end{center}
 which is clearly suspicious, regular expression
-\begin{quote}
-	\OTODO{See regular expressions in Section 7.4.  Maybe this example should be changed?}
-\end{quote}
-would match against it, thereby classifying it as malicious, by asserting the simultaneous presence of opening tag ${\sf <script>}$ and closing tag ${\sf </script>}$. This relationship between ${\sf <script>}$ and closing tag ${\sf </script>}$ is nontrivial to capture without direct analysis of the sanitizer. That is, given only the \emph{black-box} ability to send XSS payloads to the web application and register the response, deriving that internally the web application enforces the rule of not letting inputs containing ${\sf <script>}$ and later ${\sf </script>}$ through is nonobvious.
+\begin{center}
+``$\sf{((javascript:)|(</[a-zA-Z0-9]+>)}$"
+\end{center}
+would match against it, thereby classifying it as malicious, by asserting the simultaneous presence of ${\sf </}$ and ${\sf >}$ (in the opening and closing {\sf script} tags). This relationship between ${\sf </}$ and ${\sf >}$ is nontrivial to capture without direct analysis of the sanitizer. That is, given only the \emph{black-box} ability to send XSS payloads to the web application and register the response, deriving that internally the web application enforces the rule of not letting inputs containing ${\sf </}$ and later ${\sf >}$ through is nonobvious.
 
 Note, importantly, that existing testing methodologies, including delta debugging, are challenged by this problem. Formulating hypotheses iteratively is hard in this case, since the hypothesis cannot simply highlight a particular piece of the input, but rather has to be (or become) aware of interactions between different parts of the input.
 
-Note, additionally, that there is significant value in developing black-box testing techniques that are able to capture such relationships efficiently. Understanding the circumstances under which an input would be rejected or modified allows the testing tool to craft, or select, another input that bypasses the check. For our example, an alternative input would be for example\\
-	${\sf <IFRAME~SRC="javascript:alert('1');">}$\\${\quad\sf </IFRAME>}$\\
-which utilizes the ${\sf javascript:}$ syntax to execute script content.
+Note, additionally, that there is significant value in developing black-box testing techniques that are able to capture such relationships efficiently. Understanding the circumstances under which an input would be rejected or modified allows the testing tool to craft, or select, another input that bypasses the check. For our example, an alternative input would be for instance
+\begin{center}
+	${\sf <IFRAME~SRC="javascript\ldots">\quad\sf </IFRAME>}$
+	\end{center}
+which utilizes the ${\sf javascript:}$ syntax to execute script content (left unspecified above as $\ldots$).
 
-\subsection{Our Approach} We leverage results from the area of combinatorial mathematics and mathematical programming to formulate a novel testing approach. The key conceptual idea is to break up the task of locating elements of interest (in our example, either individual parts of the input like ${\sf <script>}$ or relationships like ${\sf (<script>, </script>)}$) into tests on subsets (or groups) rather than on individual elements. This is known as \emph{group testing}.
+\subsection{Our Approach} We leverage results from the area of combinatorial mathematics and mathematical programming to formulate a novel testing approach. The key conceptual idea is to break up the task of locating elements of interest (in our example, either individual parts of the input, like ${\sf <}$,
+${\sf >}$, ${\sf />}$ and ${\sf script}$, or relationships, like ${\sf (<,>}$ and ${\sf (<,/>}$, into tests on subsets (or groups) rather than on individual elements. This is known as \emph{group testing}.
 
-The main assumption underlying group testing is that the property of interest is disjunctive in nature. That is, if it holds for any individual in the group, then it holds for the group as a whole. As an illustration, if we craft a test input to the web application that contains ${\sf <script>}$ and later ${\sf </script>}$, then regardless of what the other parts of the input are (excluding some end cases like line breaks), it will be rejected.
+The main assumption underlying group testing is that the property of interest is disjunctive in nature. That is, if it holds for any individual in the group, then it holds for the group as a whole. As an illustration, if we craft a test input to the web application that contains ${\sf <}$ and later ${\sf />}$, then regardless of what the other parts of the input are (excluding some end cases like line breaks), it will be rejected.
 
 Thanks to this property, it becomes possible to localize --- through a relatively short series of (properly designed) tests --- the elements present in the input that correlate with rejection. Stated formally, given $N$ candidate elements, let $K \ll N$ be the number of elements of interest. Then it is possible to converge on these $K$ elements with high probability by executing $O(K \cdot \log (N))$ tests (or drawing this order of samples, to use signal-processing terminology).
 
